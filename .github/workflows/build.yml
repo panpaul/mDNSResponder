@@ -1,0 +1,26 @@
+name: 'Auto Build and Package'
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        shell: pwsh
+        run: .\build.ps1
+      - name: Package
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'release.zip'
+          path: 'dist'
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: "SDK and Service"
+          artifacts: "release.zip"
+          token: ${{ secrets.GITHUB_TOKEN }}
